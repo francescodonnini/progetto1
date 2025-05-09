@@ -1,0 +1,87 @@
+networks:
+  hadoop_network:
+    driver: bridge
+
+services:
+  namenode:
+    image: matnar/hadoop:3.4.1
+    container_name: namenode
+    ports:
+      - "9870:9870"
+    networks:
+      - hadoop_network
+    volumes:
+      - ./start_master.sh:/opt/scripts/start_master.sh
+      - ./dataset/:/opt/dataset/
+    entrypoint: /bin/sh
+    command: ["/opt/scripts/start_master.sh"]
+    tty: true
+  
+  datanode1: 
+    image: matnar/hadoop:3.4.1
+    container_name: datanode1
+    ports:
+      - "9864:9864"
+    networks:
+      - hadoop_network
+    volumes:
+      - ./start_worker.sh:/opt/scripts/start_worker.sh
+    entrypoint: /bin/sh
+    command: ["/opt/scripts/start_worker.sh"]
+    tty: true
+  
+  datanode2: 
+    image: matnar/hadoop:3.4.1
+    container_name: datanode2
+    ports:
+      - "9865:9865"
+    networks:
+      - hadoop_network
+    volumes:
+      - ./start_worker.sh:/opt/scripts/start_worker.sh
+    entrypoint: /bin/sh
+    command: ["/opt/scripts/start_worker.sh"]
+    tty: true
+  
+  datanode3: 
+    image: matnar/hadoop:3.4.1
+    container_name: datanode3
+    ports:
+      - "9866:9866"
+    networks:
+      - hadoop_network
+    volumes:
+      - ./start_worker.sh:/opt/scripts/start_worker.sh
+    entrypoint: /bin/sh
+    command: ["/opt/scripts/start_worker.sh"]
+    tty: true
+  
+  spark:
+    image: docker.io/bitnami/spark:3.5.5
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    ports:
+      - '8080:8080'
+      - '7077:7077'
+    networks:
+      - hadoop_network
+
+  spark-worker:
+    image: docker.io/bitnami/spark:3.5.5
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    networks:
+      - hadoop_network
