@@ -12,7 +12,6 @@ services:
       - hadoop_network
     volumes:
       - ./start_master.sh:/opt/scripts/start_master.sh
-      - ./dataset/:/opt/dataset/
     entrypoint: /bin/sh
     command: ["/opt/scripts/start_master.sh"]
     tty: true
