@@ -8,10 +8,12 @@ services:
     container_name: namenode
     ports:
       - "9870:9870"
+      - "54310:54310"
     networks:
       - hadoop_network
     volumes:
       - ./start_master.sh:/opt/scripts/start_master.sh
+      - ./dataset:/opt/dataset
     entrypoint: /bin/sh
     command: ["/opt/scripts/start_master.sh"]
     tty: true
@@ -75,8 +77,8 @@ services:
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark:7077
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=2G
+      - SPARK_WORKER_CORES=4
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
