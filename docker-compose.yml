@@ -4,68 +4,46 @@ networks:
 
 services:
   namenode:
-    image: matnar/hadoop:3.4.1
-    container_name: namenode
-    ports:
-      - "9870:9870"
-      - "54310:54310"
-    networks:
-      - hadoop_network
+    image: apache/hadoop:3.4.1
+    hostname: namenode
     volumes:
-      - ./start_master.sh:/opt/scripts/start_master.sh
       - ./dataset:/opt/dataset
-    entrypoint: /bin/sh
-    command: ["/opt/scripts/start_master.sh"]
-    tty: true
-  
-  datanode1: 
-    image: matnar/hadoop:3.4.1
-    container_name: datanode1
+      - ./populate-dfs.sh:/opt/scripts/populate-dfs.sh
     ports:
-      - "9864:9864"
+      - 9870:9870
+      - 8020:8020
+    env_file:
+      - ./config
+    environment:
+      - ENSURE_NAMENODE_DIR=/tmp/hadoop-root/dfs/name
+    command: ["hdfs", "namenode"]
     networks:
       - hadoop_network
-    volumes:
-      - ./start_worker.sh:/opt/scripts/start_worker.sh
-    entrypoint: /bin/sh
-    command: ["/opt/scripts/start_worker.sh"]
-    tty: true
   
-  datanode2: 
-    image: matnar/hadoop:3.4.1
-    container_name: datanode2
-    ports:
-      - "9865:9865"
+  datanode_1:
+    image: apache/hadoop:3.4.1
+    command: ["hdfs", "datanode"]
+    env_file:
+      - ./config
     networks:
       - hadoop_network
-    volumes:
-      - ./start_worker.sh:/opt/scripts/start_worker.sh
-    entrypoint: /bin/sh
-    command: ["/opt/scripts/start_worker.sh"]
-    tty: true
   
-  datanode3: 
-    image: matnar/hadoop:3.4.1
-    container_name: datanode3
-    ports:
-      - "9866:9866"
+  datanode_2:
+    image: apache/hadoop:3.4.1
+    command: ["hdfs", "datanode"]
+    env_file:
+      - ./config
     networks:
       - hadoop_network
-    volumes:
-      - ./start_worker.sh:/opt/scripts/start_worker.sh
-    entrypoint: /bin/sh
-    command: ["/opt/scripts/start_worker.sh"]
-    tty: true
   
-  spark:
-    image: docker.io/bitnami/spark:3.5.5
+  spark-master:
+    image: apache/spark:3.5.0
+    hostname: spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
+    tty: true
     environment:
       - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      - SPARK_CONF_spark_hadoop_fs_defaultFS=hdfs://namenode:8020
     ports:
       - '8080:8080'
       - '7077:7077'
@@ -73,16 +51,23 @@ services:
       - hadoop_network
 
   spark-worker:
-    image: docker.io/bitnami/spark:3.5.5
+    image: apache/spark:3.5.0
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    tty: true
+    depends_on:
+      - spark-master
     environment:
       - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark:7077
-      - SPARK_WORKER_MEMORY=2G
-      - SPARK_WORKER_CORES=4
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_CONF_spark_hadoop_fs_defaultFS=hdfs://namenode:8020
     networks:
       - hadoop_network
+
+  firefox:
+    image: jlesage/firefox
+    hostname: firefox
+    ports:
+      - 5800:5800
+    networks:
+      - hadoop_network
+    
