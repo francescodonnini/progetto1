@@ -3,6 +3,21 @@ networks:
     driver: bridge
 
 services:
+  web-server:
+    image: franc/httpd
+    hostname: webserver
+    networks:
+      - hadoop_network
+
+  nifi:
+    image: apache/nifi
+    hostname: nifi
+    networks:
+      - hadoop_network
+    environment:
+      SINGLE_USER_CREDENTIALS_USERNAME: 'admin'
+      SINGLE_USER_CREDENTIALS_PASSWORD: '123456789123'
+
   namenode:
     image: apache/hadoop:3.4.1
     hostname: namenode
@@ -70,7 +85,7 @@ services:
     networks:
       - hadoop_network
     volumes:
-      - ./query/target:/opt/app
+      - ./target:/opt/app
 
   firefox:
     image: jlesage/firefox
