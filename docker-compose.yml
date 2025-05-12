@@ -9,21 +9,11 @@ services:
     networks:
       - hadoop_network
 
-  nifi:
-    image: apache/nifi
-    hostname: nifi
-    networks:
-      - hadoop_network
-    environment:
-      SINGLE_USER_CREDENTIALS_USERNAME: 'admin'
-      SINGLE_USER_CREDENTIALS_PASSWORD: '123456789123'
-
   namenode:
     image: apache/hadoop:3.4.1
     hostname: namenode
     volumes:
       - ./dataset:/opt/dataset
-      - ./populate-dfs.sh:/opt/scripts/populate-dfs.sh
     ports:
       - 9870:9870
       - 8020:8020
@@ -70,7 +60,8 @@ services:
     networks:
       - hadoop_network
     volumes:
-      - ./query/target:/opt/app
+      - ./target:/opt/app
+      - ./results:/opt/results
 
   spark-worker:
     image: apache/spark:3.5.0
