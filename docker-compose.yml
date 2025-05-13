@@ -12,8 +12,6 @@ services:
   namenode:
     image: apache/hadoop:3.4.1
     hostname: namenode
-    volumes:
-      - ./dataset:/opt/dataset
     ports:
       - 9870:9870
       - 8020:8020
@@ -24,7 +22,21 @@ services:
     command: ["hdfs", "namenode"]
     networks:
       - hadoop_network
-  
+
+  hdfs-init:
+    image: apache/hadoop:3.4.1
+    depends_on:
+      - namenode
+    command: ["sh", "/opt/scripts/init-hdfs.sh"]
+    tty: true
+    env_file:
+      - ./config
+    networks:
+      - hadoop_network
+    volumes:
+      - ./scripts/init-hdfs.sh:/opt/scripts/init-hdfs.sh
+      - ./dataset:/opt/dataset
+
   datanode_1:
     image: apache/hadoop:3.4.1
     command: ["hdfs", "datanode"]
@@ -44,6 +56,8 @@ services:
   spark-master:
     image: apache/spark:3.5.0
     hostname: spark-master
+    depends_on:
+      - hdfs-init
     command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
     tty: true
     environment:
