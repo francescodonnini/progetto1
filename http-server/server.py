@@ -2,8 +2,6 @@ from http.server import SimpleHTTPRequestHandler, HTTPServer
 
 class CSVRequestHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/data.csv':
-            self.path = 'data.csv'
         return super().do_GET()
 
 if __name__ == "__main__":
