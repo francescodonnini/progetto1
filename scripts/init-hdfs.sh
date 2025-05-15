@@ -17,4 +17,5 @@ hdfs dfs -mkdir /user/spark
 hdfs dfs -chown spark:hadopp /user/spark
 hdfs dfs -chmod 755 /user/spark
 hdfs dfs -put /opt/dataset/data.csv /data.csv
+hdfs dfs -put /opt/dataset/data.parquet /data.parquet
 echo "directories created successfully"
