@@ -1,0 +1,112 @@
+networks:
+  hadoop_network:
+    driver: bridge
+
+services:
+  web-server:
+    image: franc/httpd
+    hostname: webserver
+    networks:
+      - hadoop_network
+
+  namenode:
+    image: apache/hadoop:3.4.1
+    hostname: namenode
+    ports:
+      - 9870:9870
+      - 8020:8020
+    env_file:
+      - ./config
+    environment:
+      - ENSURE_NAMENODE_DIR=/tmp/hadoop-root/dfs/name
+    command: ["hdfs", "namenode"]
+    networks:
+      - hadoop_network
+
+  hdfs-init:
+    image: apache/hadoop:3.4.1
+    depends_on:
+      - namenode
+    command: ["sh", "/opt/scripts/init-hdfs.sh"]
+    tty: true
+    env_file:
+      - ./config
+    networks:
+      - hadoop_network
+    volumes:
+      - ./scripts/init-hdfs.sh:/opt/scripts/init-hdfs.sh
+      - ./dataset:/opt/dataset
+
+  datanode_1:
+    image: apache/hadoop:3.4.1
+    command: ["hdfs", "datanode"]
+    env_file:
+      - ./config
+    networks:
+      - hadoop_network
+  
+  datanode_2:
+    image: apache/hadoop:3.4.1
+    command: ["hdfs", "datanode"]
+    env_file:
+      - ./config
+    networks:
+      - hadoop_network
+  
+  spark-master:
+    image: apache/spark:3.5.0
+    hostname: spark-master
+    depends_on:
+      - hdfs-init
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
+    tty: true
+    environment:
+      - SPARK_MODE=master
+      - SPARK_CONF_spark_hadoop_fs_defaultFS=hdfs://namenode:8020
+      - HDFS_HOST=namenode
+      - HDFS_PATH=data.parquet
+      - HDFS_PORT=8020
+      - SPARK_MASTER=spark-master
+      - SPARK_MASTER_PORT=7077
+    ports:
+      - '8080:8080'
+      - '7077:7077'
+    networks:
+      - hadoop_network
+    volumes:
+      - ./target:/opt/app
+      - ./results:/opt/results
+
+  spark-worker:
+    image: apache/spark:3.5.0
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    tty: true
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_CONF_spark_hadoop_fs_defaultFS=hdfs://namenode:8020
+    networks:
+      - hadoop_network
+    volumes:
+      - ./target:/opt/app
+
+  cache:
+    image: redis:6.2-alpine
+    container_name: cache
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    networks:
+      - hadoop_network
+
+  firefox:
+    image: jlesage/firefox
+    hostname: firefox
+    ports:
+      - 5800:5800
+    networks:
+      - hadoop_network
+    
