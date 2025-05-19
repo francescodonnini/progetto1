@@ -30,7 +30,7 @@ services:
     command: ["sh", "/opt/scripts/init-hdfs.sh"]
     tty: true
     env_file:
-      - conf/hadoop.condfig
+      - conf/hadoop.config
     networks:
       - hadoop_network
     volumes:
@@ -59,10 +59,12 @@ services:
     depends_on:
       - hdfs-init
     command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
-    tty: true
     env_file:
-      - conf/spark.master.conf
-      - .env.influxdb2
+      - conf/spark.master.config
+    environment:
+      INFLUXDB_USER: admin
+      INFLUXDB_PASSWORD: almeno12caratteri
+      INFLUXDB_TOKEN: almeno12caratteri
     ports:
       - '8080:8080'
       - '7077:7077'
@@ -70,7 +72,6 @@ services:
       - hadoop_network
     volumes:
       - ./target:/opt/app
-      - ./results:/opt/results
 
   spark-worker:
     image: apache/spark:3.5.0
@@ -80,6 +81,10 @@ services:
       - spark-master
     env_file:
       - conf/spark.worker.config
+    environment:
+      INFLUXDB_USER: admin
+      INFLUXDB_PASSWORD: almeno12caratteri
+      INFLUXDB_TOKEN: almeno12caratteri
     networks:
       - hadoop_network
     volumes:
@@ -93,9 +98,11 @@ services:
     networks:
       - hadoop_network
 
-influxdb:
+  influxdb:
     image: influxdb:2
     hostname: influxdb
+    networks:
+      - hadoop_network
     ports:
       - 8086:8086
     env_file:

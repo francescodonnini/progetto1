@@ -1,0 +1,33 @@
+networks:
+  hadoop_network:
+    driver: bridge
+
+services:
+  nifi:
+    image: franc/nifi
+    hostname: nifi
+    environment:
+      - SINGLE_USER_CREDENTIALS_USERNAME=admin
+      - SINGLE_USER_CREDENTIALS_PASSWORD=almeno12caratteri
+    ports:
+      - 8443:8443
+    networks:
+      - hadoop_network
+  
+  python:
+    image: franc/python
+    tty: true
+    networks:
+      - hadoop_network
+    volumes:
+      - ./templates/:/opt/templates/
+      - ./scripts/:/opt/scripts/
+  
+  firefox:
+    image: jlesage/firefox
+    hostname: firefox
+    ports:
+      - 5800:5800
+    networks:
+      - hadoop_network
+
