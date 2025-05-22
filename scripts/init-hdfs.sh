@@ -10,7 +10,6 @@ until hdfs dfs -ls / >/dev/null; do
   sleep 6
 done
 
-# Create HDFS directories
 echo "creating directories for spark cluster"
 hdfs dfs -mkdir /user
 hdfs dfs -mkdir /user/spark
@@ -18,4 +17,9 @@ hdfs dfs -chown spark:hadopp /user/spark
 hdfs dfs -chmod 755 /user/spark
 hdfs dfs -put /opt/dataset/data.csv /data.csv
 hdfs dfs -put /opt/dataset/data.parquet /data.parquet
+
+hdfs dfs -mkdir /user/nifi
+hdfs dfs -chown nifi:hadopp /user/nifi
+hdfs dfs -chmod 755 /user/nifi
+
 echo "directories created successfully"

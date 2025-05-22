@@ -3,6 +3,18 @@ networks:
     driver: bridge
 
 services:
+  nifi:
+    image: franc/nifi:2.4.0
+    hostname: nifi
+    networks:
+      - hadoop_network
+    environment:
+      - SINGLE_USER_CREDENTIALS_USERNAME=admin
+      - SINGLE_USER_CREDENTIALS_PASSWORD=almeno12caratteri
+    volumes:
+      - ./nifi/templates:/opt/templates
+    
+
   web-server:
     image: franc/httpd
     hostname: webserver
@@ -97,6 +109,8 @@ services:
       - 5800:5800
     networks:
       - hadoop_network
+    volumes:
+      - ./nifi/templates:/opt/templates
 
   influxdb:
     image: influxdb:2
@@ -119,3 +133,7 @@ secrets:
     file: secrets/.env.influxdb-admin-password
   influxdb-admin-token:
     file: secrets/.env.influxdb-admin-token
+  nifi-admin-username:
+    file: secrets/.env.nifi-admin-username
+  nifi-admin-password:
+    file: secrets/.env.nifi-admin-password
