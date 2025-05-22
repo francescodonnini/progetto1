@@ -11,10 +11,10 @@ services:
     environment:
       - SINGLE_USER_CREDENTIALS_USERNAME=admin
       - SINGLE_USER_CREDENTIALS_PASSWORD=almeno12caratteri
+      - NIFI_SENSITIVE_PROPS_KEY='almeno12caratteri'
     volumes:
       - ./nifi/templates:/opt/templates
     
-
   web-server:
     image: franc/httpd
     hostname: webserver
@@ -48,6 +48,7 @@ services:
     volumes:
       - ./scripts/init-hdfs.sh:/opt/scripts/init-hdfs.sh
       - ./dataset:/opt/dataset
+      - ./input/:/opt/input
 
   datanode_1:
     image: apache/hadoop:3.4.1

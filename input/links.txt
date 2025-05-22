@@ -1,0 +1,8 @@
+http://webserver:8080/IT_2021.csv
+http://webserver:8080/IT_2022.csv
+http://webserver:8080/IT_2023.csv
+http://webserver:8080/IT_2024.csv
+http://webserver:8080/SE_2021.csv
+http://webserver:8080/SE_2022.csv
+http://webserver:8080/SE_2023.csv
+http://webserver:8080/SE_2024.csv
