@@ -71,6 +71,8 @@ services:
     hostname: spark-master
     depends_on:
       - hdfs-init
+    depends_on:
+      - hdfs-init
     command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
     env_file:
       - conf/spark.master.config
