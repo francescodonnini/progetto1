@@ -10,28 +10,17 @@ until hdfs dfs -ls / >/dev/null; do
   sleep 6
 done
 
-<<<<<<< HEAD
-echo "creating directories for spark cluster"
 hdfs dfs -mkdir /user
 hdfs dfs -mkdir /user/spark
 hdfs dfs -chown spark:hadoop /user/spark
-hdfs dfs -chmod 775 /user/spark
-# hdfs dfs -put /opt/dataset/data.csv /data.csv
-# hdfs dfs -put /opt/dataset/data.parquet /data.parquet
+hdfs dfs -chmod 755 /user/spark
 
 hdfs dfs -mkdir /user/nifi
 hdfs dfs -chown nifi:hadoop /user/nifi
 hdfs dfs -chmod 755 /user/nifi
-hdfs dfs -put /opt/input/links.txt /user/nifi/links.txt
+hdfs dfs -mkdir /user/nifi/input/
+hdfs dfs -put /opt/input/links.txt /user/nifi/input/links.txt
 
-=======
-# Create HDFS directories
-echo "creating directories for spark cluster"
-hdfs dfs -mkdir /user
-hdfs dfs -mkdir /user/spark
-hdfs dfs -chown spark:hadopp /user/spark
-hdfs dfs -chmod 755 /user/spark
-hdfs dfs -put /opt/dataset/data.csv /data.csv
-hdfs dfs -put /opt/dataset/data.parquet /data.parquet
->>>>>>> ac06acffbef333b0e7833c9b749410f3d7910a86
-echo "directories created successfully"
+echo "starting processor"
+python3 /opt/scripts/start_processor.py
+echo "processor started"

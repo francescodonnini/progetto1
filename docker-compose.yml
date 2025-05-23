@@ -36,17 +36,22 @@ services:
       - hadoop_network
 
   hdfs-init:
-    image: apache/hadoop:3.4.1
+    image: franc/hadoop-req:3.4.1
     depends_on:
       - namenode
     command: ["sh", "/opt/scripts/init-hdfs.sh"]
     tty: true
     env_file:
-      - conf/hadoop.config
+      - conf/hdfs-init.config
+    environment:
+      - NIFI_USERNAME=admin
+      - NIFI_PASSWORD=almeno12caratteri
+      - NIFI_PID=7ffb7bca-df1f-3f5d-be51-f3f38d3cddd1 
     networks:
       - hadoop_network
     volumes:
       - ./scripts/init-hdfs.sh:/opt/scripts/init-hdfs.sh
+      - ./scripts/start_processor.py:/opt/scripts/start_processor.py
       - ./dataset:/opt/dataset
       - ./input/:/opt/input
 
@@ -69,8 +74,6 @@ services:
   spark-master:
     image: apache/spark:3.5.0
     hostname: spark-master
-    depends_on:
-      - hdfs-init
     depends_on:
       - hdfs-init
     command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
@@ -124,19 +127,7 @@ services:
       - 8086:8086
     env_file:
       - conf/influxdb.config
-    secrets:
-      - influxdb-admin-username
-      - influxdb-admin-password
-      - influxdb-admin-token
-
-secrets:
-  influxdb-admin-username:
-    file: secrets/.env.influxdb-admin-username
-  influxdb-admin-password:
-    file: secrets/.env.influxdb-admin-password
-  influxdb-admin-token:
-    file: secrets/.env.influxdb-admin-token
-  nifi-admin-username:
-    file: secrets/.env.nifi-admin-username
-  nifi-admin-password:
-    file: secrets/.env.nifi-admin-password
+    environment:
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: almeno12caratteri
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: almeno12caratteri
