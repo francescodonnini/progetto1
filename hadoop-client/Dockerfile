@@ -3,6 +3,7 @@ USER root
 
 RUN apt-get update
 RUN apt-get install -y curl \
+        wget \
         tar \
         sudo \
         rsync \
@@ -20,7 +21,9 @@ RUN apt-get install -y curl \
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 ENV PATH=$PATH:$JAVA_HOME/bin
 
-RUN wget https://downloads.apache.org/hadoop/common/current/hadoop-3.4.1.tar.gz ; tar -zxf hadoop-3.4.1.tar.gz -C /usr/local/ ; rm hadoop-3.4.1.tar.gz
+RUN wget https://downloads.apache.org/hadoop/common/current/hadoop-3.4.1.tar.gz \
+    && tar -zxf hadoop-3.4.1.tar.gz -C /usr/local/ \
+    && rm hadoop-3.4.1.tar.gz
 RUN cd /usr/local && ln -s ./hadoop-3.4.1 hadoop
 
 ENV HADOOP_COMMON_HOME=/usr/local/hadoop

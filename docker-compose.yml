@@ -36,7 +36,7 @@ services:
       - hadoop_network
 
   hdfs-init:
-    image: franc/hadoop-req:3.4.1
+    image: franc/hadoop-client:3.4.1
     depends_on:
       - namenode
     command: ["sh", "/opt/scripts/init-hdfs.sh"]
