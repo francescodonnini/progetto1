@@ -1,3 +1,4 @@
+datetime_utc,zone_id,carbon_intensity_gco2eq_per_kwh_direct,carbon_free_energy_percentage_cfe
 2021-01-01 00:00:00,IT,317.69,38.61
 2021-01-01 01:00:00,IT,320.21,38.89
 2021-01-01 02:00:00,IT,314.39,40.11

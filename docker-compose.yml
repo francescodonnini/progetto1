@@ -89,6 +89,8 @@ services:
       - hadoop_network
     volumes:
       - ./target:/opt/app
+      - ./dataset/data.csv:/opt/dataset/data.csv
+      - ./dataset/data.parquet:/opt/dataset/data.parquet
 
   spark-worker:
     image: apache/spark:3.5.0
@@ -106,6 +108,8 @@ services:
       - hadoop_network
     volumes:
       - ./target:/opt/app
+      - ./dataset/data.csv:/opt/dataset/data.csv
+      - ./dataset/data.parquet:/opt/dataset/data.parquet
 
   firefox:
     image: jlesage/firefox
