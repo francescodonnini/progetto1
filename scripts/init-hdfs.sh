@@ -14,6 +14,9 @@ hdfs dfs -mkdir /user
 hdfs dfs -mkdir /user/spark
 hdfs dfs -chown spark:hadoop /user/spark
 hdfs dfs -chmod 755 /user/spark
+hdfs dfs -mkdir /user/spark/events
+hdfs dfs -chown spark:hadoop /user/spark/events
+hdfs dfs -chmod 755 /user/spark/events
 
 hdfs dfs -mkdir /user/nifi
 hdfs dfs -chown nifi:hadoop /user/nifi

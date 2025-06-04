@@ -115,6 +115,22 @@ services:
       - ./dataset/data.csv:/opt/dataset/data.csv
       - ./dataset/data.parquet:/opt/dataset/data.parquet
 
+  spark-history:
+    image: apache/spark:3.5.0
+    hostname: spark-history
+    command: ["/opt/scripts/entrypoint.sh", "history"]
+    tty: true
+    depends_on:
+      - spark-master
+      - hdfs-init
+    env_file:
+      - conf/spark.history.config
+    networks:
+      - hadoop_network
+    volumes:
+      - ./scripts/entrypoint.sh:/opt/scripts/entrypoint.sh
+      - ./events:/opt/spark/events
+
   firefox:
     image: jlesage/firefox
     hostname: firefox
