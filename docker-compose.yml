@@ -24,6 +24,7 @@ services:
   namenode:
     image: apache/hadoop:3.4.1
     hostname: namenode
+    command: ["/opt/scripts/namenode-init.sh"]
     ports:
       - 9870:9870
       - 8020:8020
@@ -31,7 +32,8 @@ services:
       - conf/hadoop.cluster.config
     environment:
       - ENSURE_NAMENODE_DIR=/tmp/hadoop-root/dfs/name
-    command: ["hdfs", "namenode"]
+    volumes:
+      - ./scripts/namenode-init.sh:/opt/scripts/namenode-init.sh
     networks:
       - hadoop_network
 

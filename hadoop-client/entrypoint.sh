@@ -10,8 +10,6 @@ until hdfs dfs -ls / >/dev/null; do
   sleep 3
 done
 
-hdfs namenode -format
-
 hdfs dfs -mkdir /user
 hdfs dfs -mkdir /user/spark
 hdfs dfs -chown spark:hadoop /user/spark
