@@ -1,13 +1,13 @@
 #!/bin/bash
 
 echo "waiting for 'namenode' to be ready..."
-until curl -s http://namenode:9870 >/dev/null; do
+until curl -s $HDFS_NAMENODE_ADDRESS >/dev/null; do
   sleep 3
 done
 
 until hdfs dfs -ls / >/dev/null; do
   echo "HDFS not ready yet..."
-  sleep 6
+  sleep 3
 done
 
 hdfs dfs -mkdir /user
@@ -25,5 +25,9 @@ hdfs dfs -mkdir /user/nifi/input/
 hdfs dfs -put /opt/input/links.txt /user/nifi/input/links.txt
 
 echo "starting processor"
-python3 /opt/scripts/start_processor.py
+python3 /usr/local/scripts/start-processor.py
 echo "processor started"
+
+if [ "${SPARK_EVENTLOG_ENABLED:-}" = "true" ]; then
+  $SPARK_HOME/bin/spark-class org.apache.spark.deploy.history.HistoryServer
+fi

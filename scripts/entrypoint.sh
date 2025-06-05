@@ -1,5 +1,3 @@
-chown -R spark:spark /opt/spark/events
-chmod -R 775 /opt/spark/events
 case $1 in
     "master")
     /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master

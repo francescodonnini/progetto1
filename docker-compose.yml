@@ -28,29 +28,29 @@ services:
       - 9870:9870
       - 8020:8020
     env_file:
-      - conf/hadoop.config
+      - conf/hadoop.cluster.config
     environment:
       - ENSURE_NAMENODE_DIR=/tmp/hadoop-root/dfs/name
     command: ["hdfs", "namenode"]
     networks:
       - hadoop_network
 
-  hdfs-init:
+  hadoop-init:
     image: franc/hadoop-client:3.4.1
     depends_on:
       - namenode
-    command: ["sh", "/opt/scripts/init-hdfs.sh"]
+    hostname: spark-history    
     tty: true
     env_file:
-      - conf/hdfs-init.config
+      - conf/hadoop.init.config
+      - conf/spark.log.config
+      - conf/spark.history.config
     environment:
       - NIFI_USERNAME=admin
       - NIFI_PASSWORD=almeno12caratteri
     networks:
       - hadoop_network
     volumes:
-      - ./scripts/init-hdfs.sh:/opt/scripts/init-hdfs.sh
-      - ./scripts/start_processor.py:/opt/scripts/start_processor.py
       - ./dataset:/opt/dataset
       - ./input/:/opt/input
 
@@ -58,7 +58,7 @@ services:
     image: apache/hadoop:3.4.1
     command: ["hdfs", "datanode"]
     env_file:
-      - conf/hadoop.config
+      - conf/hadoop.cluster.config
     networks:
       - hadoop_network
   
@@ -66,7 +66,7 @@ services:
     image: apache/hadoop:3.4.1
     command: ["hdfs", "datanode"]
     env_file:
-      - conf/hadoop.config
+      - conf/hadoop.cluster.config
     networks:
       - hadoop_network
   
@@ -74,9 +74,10 @@ services:
     image: apache/spark:3.5.0
     hostname: spark-master
     depends_on:
-      - hdfs-init
+      - hadoop-init
     command: ["/opt/scripts/entrypoint.sh", "master"]
     env_file:
+      - conf/spark.log.config
       - conf/spark.master.config
     environment:
       INFLUXDB_USER: admin
@@ -88,7 +89,6 @@ services:
     networks:
       - hadoop_network
     volumes:
-      - ./events:/opt/spark/events
       - ./scripts/entrypoint.sh:/opt/scripts/entrypoint.sh
       - ./target:/opt/app
       - ./dataset/data.csv:/opt/dataset/data.csv
@@ -101,6 +101,7 @@ services:
     depends_on:
       - spark-master
     env_file:
+      - conf/spark.log.config
       - conf/spark.worker.config
     environment:
       INFLUXDB_USER: admin
@@ -109,7 +110,6 @@ services:
     networks:
       - hadoop_network
     volumes:
-      - ./events:/opt/spark/events
       - ./scripts/entrypoint.sh:/opt/scripts/entrypoint.sh
       - ./target:/opt/app
       - ./dataset/data.csv:/opt/dataset/data.csv
