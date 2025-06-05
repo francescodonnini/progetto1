@@ -115,6 +115,16 @@ services:
       - ./dataset/data.csv:/opt/dataset/data.csv
       - ./dataset/data.parquet:/opt/dataset/data.parquet
 
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - hadoop_network
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+
   firefox:
     image: jlesage/firefox
     hostname: firefox
