@@ -68,6 +68,4 @@ USER hadoop
 ADD core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
 ADD hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 
-
-
 ENTRYPOINT [ "/usr/local/scripts/entrypoint.sh" ]

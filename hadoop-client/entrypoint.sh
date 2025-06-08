@@ -22,7 +22,8 @@ hdfs dfs -mkdir /user/nifi
 hdfs dfs -chown nifi:hadoop /user/nifi
 hdfs dfs -chmod 755 /user/nifi
 hdfs dfs -mkdir /user/nifi/input/
-hdfs dfs -put /opt/input/links.txt /user/nifi/input/links.txt
+
+hdfs dfs -put /opt/input/$LINKS_FILE /user/nifi/input/links.txt
 
 echo "starting processor"
 python3 /usr/local/scripts/start-processor.py
