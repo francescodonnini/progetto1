@@ -108,14 +108,6 @@ services:
     volumes:
       - ./grafana-data:/var/lib/grafana
 
-  renderer:
-    image: grafana/grafana-image-renderer:latest
-    hostname: grafana-renderer
-    env_file:
-      - ./secrets/grafana.renderer.config
-    networks:
-      - hadoop_network
-
   firefox:
     image: jlesage/firefox
     hostname: firefox
