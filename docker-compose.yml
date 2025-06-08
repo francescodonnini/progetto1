@@ -55,22 +55,14 @@ services:
       - ./dataset:/opt/dataset
       - ./input/:/opt/input
 
-  datanode_1:
+  datanode:
     image: apache/hadoop:3.4.1
     command: ["hdfs", "datanode"]
     env_file:
       - conf/hadoop.cluster.config
     networks:
       - hadoop_network
-  
-  datanode_2:
-    image: apache/hadoop:3.4.1
-    command: ["hdfs", "datanode"]
-    env_file:
-      - conf/hadoop.cluster.config
-    networks:
-      - hadoop_network
-  
+
   spark-master:
     image: apache/spark:3.5.0
     hostname: spark-master
@@ -115,6 +107,14 @@ services:
       - hadoop_network
     volumes:
       - ./grafana-data:/var/lib/grafana
+
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+    hostname: grafana-renderer
+    env_file:
+      - ./secrets/grafana.renderer.config
+    networks:
+      - hadoop_network
 
   firefox:
     image: jlesage/firefox
