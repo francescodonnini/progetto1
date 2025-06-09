@@ -1,1 +1,1 @@
-docker compose exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode client --class io.github.francescodonnini.QueryDispatcher /opt/app/uber-jar-with-dependencies.jar $@
+docker compose exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 --deploy-mode cluster --class io.github.francescodonnini.QueryDispatcher /opt/app/uber-jar-with-dependencies.jar $@
