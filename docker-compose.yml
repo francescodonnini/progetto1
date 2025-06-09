@@ -4,7 +4,8 @@ networks:
 
 services:
   nifi:
-    image: franc/nifi:2.4.0
+    build:
+      context: ./nifi/
     hostname: nifi
     env_file:
       - secrets/nifi.auth.config
@@ -14,7 +15,8 @@ services:
       - ./nifi/templates:/opt/templates
     
   web-server:
-    image: franc/httpd
+    build:
+      context: ./http-server/
     hostname: webserver
     env_file:
       - conf/sources.config
@@ -35,7 +37,8 @@ services:
       - hadoop_network
 
   hadoop-init:
-    image: franc/hadoop-client:3.4.1
+    build:
+      context: ./hadoop-client/
     depends_on:
       - namenode
     hostname: spark-history    
