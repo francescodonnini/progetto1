@@ -25,9 +25,6 @@ services:
     image: apache/hadoop:3.4.1
     hostname: namenode
     command: ["/opt/scripts/namenode-init.sh"]
-    ports:
-      - 9870:9870
-      - 8020:8020
     env_file:
       - conf/hadoop.cluster.config
     environment:
@@ -73,9 +70,6 @@ services:
       - conf/spark.log.config
       - conf/spark.master.config
       - secrets/spark.influxdb.auth.config
-    ports:
-      - '8080:8080'
-      - '7077:7077'
     networks:
       - hadoop_network
     volumes:
@@ -101,8 +95,6 @@ services:
   grafana:
     image: grafana/grafana
     restart: always
-    ports:
-      - 3000:3000
     networks:
       - hadoop_network
     volumes:
@@ -123,8 +115,6 @@ services:
     hostname: influxdb
     networks:
       - hadoop_network
-    ports:
-      - 8086:8086
     env_file:
       - conf/influxdb.config
       - secrets/influxdb.auth.config
